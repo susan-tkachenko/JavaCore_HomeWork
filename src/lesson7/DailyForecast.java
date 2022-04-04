@@ -6,25 +6,32 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherResponse {
+public class DailyForecast {
 
+    private final String city;
     private final Instant date;
     private final double minimumTemperature;
     private final double maximumTemperature;
     private final String dayTextDescription;
     private final String nightTextDescription;
 
-    public WeatherResponse(
+    public DailyForecast(
+            String city,
             Instant date,
             double minimumTemperature,
             double maximumTemperature,
             String dayTextDescription,
             String nightTextDescription) {
+        this.city = city;
         this.date = date;
         this.minimumTemperature = minimumTemperature;
         this.maximumTemperature = maximumTemperature;
         this.dayTextDescription = dayTextDescription;
         this.nightTextDescription = nightTextDescription;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public Instant getDate() {
@@ -47,19 +54,19 @@ public class WeatherResponse {
         return nightTextDescription;
     }
 
-    public static List<WeatherResponse> parse(JsonObject json) {
-        List<WeatherResponse> dailyForecasts = new ArrayList<>();
+    public static List<DailyForecast> parse(String city, JsonObject json) {
+        List<DailyForecast> dailyForecasts = new ArrayList<>();
 
         JsonArray dailyForecastsJson = json.getJsonArray("DailyForecasts");
         for (int i = 0; i < dailyForecastsJson.size(); i++) {
             JsonObject jsonForecast = dailyForecastsJson.getJsonObject(i);
-            dailyForecasts.add(parseDailyForecast(jsonForecast));
+            dailyForecasts.add(parseDailyForecast(city, jsonForecast));
         }
 
         return dailyForecasts;
     }
 
-    private static WeatherResponse parseDailyForecast(JsonObject json) {
+    private static DailyForecast parseDailyForecast(String city, JsonObject json) {
         Instant date = Instant.ofEpochSecond(json.getInt("EpochDate"));
 
         JsonObject temperatureJson = json.getJsonObject("Temperature");
@@ -69,7 +76,8 @@ public class WeatherResponse {
         String dayTextDescription = json.getJsonObject("Day").getString("IconPhrase");
         String nightTextDescription = json.getJsonObject("Night").getString("IconPhrase");
 
-        return new WeatherResponse(
+        return new DailyForecast(
+                city,
                 date,
                 minimumTemperature,
                 maximumTemperature,

@@ -1,13 +1,14 @@
-package lesson7;
+package lesson8;
 
-import java.util.List;
+import lesson7.DailyForecast;
+import lesson7.DailyForecastService;
 
 public class Main {
 
     public static void main(String[] args) {
-        List<DailyForecast> fiveDayForecasts = DailyForecastService.getFiveDayForecasts("saint-petersburg");
+        DailyForecastRepository.persist(DailyForecastService.getFiveDayForecasts("saint-petersburg"));
 
-        for (DailyForecast forecast : fiveDayForecasts) {
+        for (DailyForecast forecast : DailyForecastRepository.getAll()) {
             System.out.printf(
                     "В городе %s на дату %s ожидается %s, %s, температура - %s и %s%n",
                     forecast.getCity(),
